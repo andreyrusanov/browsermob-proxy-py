@@ -83,13 +83,18 @@ class Server(RemoteServer):
         self.path = path
         self.host = 'localhost'
         self.port = options.get('port', 8080)
+        # as described in docs
+        self.proxy_port_range = options.get('proxy_port_range', [self.port + 1, self.port + 500 + 1])
         self.process = None
 
         if platform.system() == 'Darwin':
             self.command = ['sh']
         else:
             self.command = []
-        self.command += [path, '--port=%s' % self.port]
+
+        self.command += [path, '--port=%s' % self.port, '--proxyPortRange=%s-%s' % (
+            self.proxy_port_range[0], self.proxy_port_range[1]
+        )]
 
     def start(self, options=None):
         """
